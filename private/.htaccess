@@ -1,19 +1,13 @@
 Options +Indexes
 
+# Redirect from HTTP to HTTPS
 RewriteEngine on
 RewriteBase /victory/private
+RewriteCond %{HTTPS} !=on
+RewriteRule (.*) https://people.csail.mit.edu/victory/private/$1
 
-# Use this line only if a script cares about the identity of the client:
-#SSLOptions +OptRenegotiate +StdEnvVars
-# Otherwise, comment out the previous line and uncomment the following line:
-SSLOptions +OptRenegotiate
-#SSLVerifyClient require
-#SSLVerifyDepth 3
-#SSLRequire %{SSL_CLIENT_S_DN_O} == "MIT Computer Science & Artificial Intelligence Laboratory"
-
-RewriteCond          %{HTTPS} !=on
-RewriteRule          (.*) https://people.csail.mit.edu/victory/private/$1
-
+# Non-HTTPS connections should not require any further authentication because
+# they should be redirected to HTTPS by the above.
 <If "%{HTTPS} == 'on'">
 
 # This sets the default state of the directory to be "closed".
@@ -22,7 +16,7 @@ Require all denied
 <RequireAny>
     # Don't require any authentication if accesses from MIT campus
     # See http://kb.mit.edu/confluence/x/F4DCAg
-    # Or https://tig.csail.mit.edu/web-services/web-access-restriction/#restricting-access-by-ip-address
+    # And https://tig.csail.mit.edu/web-services/web-access-restriction/#restricting-access-by-ip-address
     # CSAIL Networks
     Require ip 18.26.0.0/16
     Require ip 128.30.0.0/16
