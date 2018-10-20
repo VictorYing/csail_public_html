@@ -1,0 +1,21 @@
+Options +Indexes
+
+RewriteEngine on
+RewriteBase /victory/private
+
+# Use this line only if a script cares about the identity of the client:
+SSLOptions +OptRenegotiate +StdEnvVars
+# Otherwise, comment out the previous line and uncomment the following line:
+# SSLOptions +OptRenegotiate
+SSLVerifyClient require
+SSLVerifyDepth 3
+SSLRequire %{SSL_CLIENT_S_DN_O} == "MIT Computer Science & Artificial Intelligence Laboratory"
+
+
+RewriteCond          %{REMOTE_ADDR} !^128\.(3[01]|52)\.[0-9]+\.[0-9]+$
+RewriteCond          %{REMOTE_ADDR} !^18\.26\.[0-9]+\.[0-9]+$
+RewriteCond          %{HTTPS} !=on
+#If off   campus and no https, redirect to https
+RewriteRule          (.*) https://people.csail.mit.edu/victory/private/$1
+##Other approach is to give 403 forbidden
+#RewriteRule          .* - [F]
