@@ -19,16 +19,34 @@ RewriteRule          (.*) https://people.csail.mit.edu/victory/private/$1
 # This sets the default state of the directory to be "closed".
 Require all denied
 
-# Apache 2.4 Require directives are OR-ed together by default.
-# We need AND behavior here.
-<RequireAll>
-    # Tell OIDC module to deny unauthenticated users
-    Require valid-user
-    # Disallow any access on unencrypted sessions (fallback)
-    Require ssl
-    # Require usue of CSAIL OIDC provider
-    Require claim iss:https://oidc.csail.mit.edu/
-</RequireAll>
+<RequireAny>
+    # Don't require any authentication if accesses from MIT campus
+    # See http://kb.mit.edu/confluence/x/F4DCAg
+    # Or https://tig.csail.mit.edu/web-services/web-access-restriction/#restricting-access-by-ip-address
+    # CSAIL Networks
+    Require ip 18.26.0.0/16
+    Require ip 128.30.0.0/16
+    Require ip 128.52.0.0/16
+    Require ip 192.12.11.0/24
+    # CSAIL "Guest" networks including unauthenticated wireless
+    Require ip 128.31.0.0/16
+    # MIT NET
+    Require ip 18.0.0.0/9
+    # MIT Guest WiFi:
+    Require ip 192.54.222.0/24
+
+    # If visitor does not match one of the above IP ranges, require CSAIL OIDC
+    # See https://tig.csail.mit.edu/web-services/web-access-restriction/#require-openid-connect
+    <RequireAll>
+        # Tell OIDC module to deny unauthenticated users
+        Require valid-user
+        # Disallow any access on unencrypted sessions (fallback)
+        Require ssl
+        # Require usue of CSAIL OIDC provider
+        Require claim iss:https://oidc.csail.mit.edu/
+    </RequireAll>
+
+</RequireAny>
 
 # Enable OIDC processing on this directory (but doesn't require it).
 AuthType openid-connect
