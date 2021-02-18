@@ -1,5 +1,5 @@
 Options -Indexes
 
-Redirect 301 /victory/cv.pdf https://www.victoraying.com/victorying_cv.pdf
+Redirect 301 /victory/cv.pdf https://www.victorying.com/victorying_cv.pdf
 
-RedirectMatch 301 "^/victory/$" "https://www.victoraying.com/"
+RedirectMatch 301 "^/victory/$" "https://www.victorying.com/"
